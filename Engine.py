@@ -134,8 +134,10 @@ class Move:
         return False
 
     def xadrezNotacao(self):
-        return self.getRankFiles(self.linInicial, self.colInicial) + self.getRankFiles(
-            self.linFinal, self.colFinal
+        return (
+            self.getRankFiles(self.linInicial, self.colInicial).upper()
+            + "-"
+            + self.getRankFiles(self.linFinal, self.colFinal).upper()
         )
 
     def getRankFiles(self, l, c):
