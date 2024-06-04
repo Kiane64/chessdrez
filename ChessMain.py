@@ -66,7 +66,7 @@ def main():
 
                 if len(cliqueJogador) == 2:  # movimento
                     move = Engine.Move(cliqueJogador[0], cliqueJogador[1], gs.tabuleiro)
-                    print(move.xadrezNotacao)
+                    print(move.xadrezNotacao())
                     if move in movalido:
                         gs.fazMove(move)
                         moveFeito = True
