@@ -41,24 +41,38 @@ class GameState:
         return self.movimentoPossivel()
 
     def movimentoPossivel(self):
-        moves = [Move((6, 4), (4, 4), self.tabuleiro)]
+        moves = []
         for l in range(len(self.tabuleiro)):
             for c in range(len(self.tabuleiro[l])):
-                turno = self.tabuleiro[l][c][0]
-                if (turno == "b" and self.brancoMove) and (
+                turno = self.tabuleiro[l][c][1]
+                if (turno == "b" and self.brancoMove) or (
                     turno == "p" and not self.brancoMove
                 ):
-                    peca = self.tabuleiro[l][c][1]
-                    if peca == "p":
+                    peca = self.tabuleiro[l][c][0]
+                    if peca == "P":
                         self.peaoMoves(l, c, moves)
                     if peca == "t":
                         self.torreMoves(l, c, moves)
         return moves
 
-    def peaoMoves(self):
-        pass
+    def peaoMoves(self, l, c, moves):
+        if self.brancoMove:  # movimento das peças brancas
+            if self.tabuleiro[l - 1][c] == "--":  # avanço de uma casa do peão
+                moves.append(Move((l, c), (l - 1, c), self.tabuleiro))
+                if (
+                    l == 6 and self.tabuleiro[l - 2][c] == "--"
+                ):  # avanço de duas casas do peão
+                    moves.append(Move((l, c), (l - 2, c), self.tabuleiro))
 
-    def torreMoves(self):
+        if not self.brancoMove:  # movimento das peças pretas
+            if self.tabuleiro[l + 1][c] == "--":  # avanço de uma casa do peão
+                moves.append(Move((l, c), (l + 1, c), self.tabuleiro))
+                if (
+                    l == 1 and self.tabuleiro[l + 2][c] == "--"
+                ):  # avanço de duas casas do peão
+                    moves.append(Move((l, c), (l + 2, c), self.tabuleiro))
+
+    def torreMoves(self, l, c, moves):
         pass
 
 
