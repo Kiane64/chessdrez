@@ -41,7 +41,7 @@ class GameState:
         return self.movimentoPossivel()
 
     def movimentoPossivel(self):
-        moves = []
+        moves = [Move((6, 4), (4, 4), self.tabuleiro)]
         for l in range(len(self.tabuleiro)):
             for c in range(len(self.tabuleiro[l])):
                 turno = self.tabuleiro[l][c][0]
@@ -76,6 +76,17 @@ class Move:
         self.colFinal = qdfinal[1]
         self.pecaMovida = tabuleiro[self.linInicial][self.colInicial]
         self.pecaCapturada = tabuleiro[self.linFinal][self.colFinal]
+        self.moveID = (
+            self.linInicial * 1000
+            + self.colInicial * 100
+            + self.linFinal * 10
+            + self.colFinal
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, Move):
+            return self.moveID == other.moveID
+        return False
 
     def xadrezNotacao(self):
         return self.getRankFiles(self.linInicial, self.colInicial) + self.getRankFiles(
