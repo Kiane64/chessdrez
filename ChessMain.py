@@ -35,6 +35,9 @@ def main():
     tela = p.display.set_mode((LARGURA, ALTURA))
     clock = p.time.Clock()
     gs = Engine.GameState()
+    movalido = gs.movimentoValido()
+    moveFeito = False
+
     carregarImagens()  # antes do loop
     running = True
     quadradoSelec = ()  # seleção de quadrado no jogo, rastreia o ultimo click do mouse(tuple: (lin,col))
@@ -44,6 +47,8 @@ def main():
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+
+            # Mouse
             elif e.type == p.MOUSEBUTTONDOWN:  # hora de trabalhar com o mouse
                 localizacao = p.mouse.get_pos()  # pega as coordenadas do mouse(x,y)
                 col = localizacao[0] // SQ_SIZE
@@ -62,9 +67,21 @@ def main():
                 if len(cliqueJogador) == 2:  # movimento
                     move = Engine.Move(cliqueJogador[0], cliqueJogador[1], gs.tabuleiro)
                     print(move.xadrezNotacao)
-                    gs.fazMove(move)
+                    if move in movalido:
+                        gs.fazMove(move)
+                        moveFeito = True
+
                     quadradoSelec = ()
                     cliqueJogador = []
+
+            # teclado
+            if e.type == p.KEYDOWN:
+                if e.key == p.K_z:
+                    gs.desMove()
+                    moveFeito = True
+        if moveFeito:
+            movalido = gs.movimentoValido()
+            moveFeito = False
 
         drawGameState(tela, gs)
         clock.tick(FPS)

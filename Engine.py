@@ -30,6 +30,37 @@ class GameState:
         self.movimentos.append(move)
         self.brancoMove = not self.brancoMove
 
+    def desMove(self):
+        if len(self.movimentos) != 0:  # verifica se tem movimento para desfazer
+            move = self.movimentos.pop()
+            self.tabuleiro[move.linInicial][move.colInicial] = move.pecaMovida
+            self.tabuleiro[move.linFinal][move.colFinal] = move.pecaCapturada
+            self.brancoMove = not self.brancoMove
+
+    def movimentoValido(self):
+        return self.movimentoPossivel()
+
+    def movimentoPossivel(self):
+        moves = []
+        for l in range(len(self.tabuleiro)):
+            for c in range(len(self.tabuleiro[l])):
+                turno = self.tabuleiro[l][c][0]
+                if (turno == "b" and self.brancoMove) and (
+                    turno == "p" and not self.brancoMove
+                ):
+                    peca = self.tabuleiro[l][c][1]
+                    if peca == "p":
+                        self.peaoMoves(l, c, moves)
+                    if peca == "t":
+                        self.torreMoves(l, c, moves)
+        return moves
+
+    def peaoMoves(self):
+        pass
+
+    def torreMoves(self):
+        pass
+
 
 class Move:
 
