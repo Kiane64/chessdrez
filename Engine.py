@@ -64,6 +64,13 @@ class GameState:
                 ):  # avanço de duas casas do peão
                     moves.append(Move((l, c), (l - 2, c), self.tabuleiro))
 
+            if c - 1 >= 0:  # captura no lado esquerdo
+                if self.tabuleiro[l - 1][c - 1][1] == "p":
+                    moves.append(Move((l, c), (l - 1, c - 1), self.tabuleiro))
+            if c + 1 <= 7:  # captura no lado direito
+                if self.tabuleiro[l - 1][c + 1][1] == "p":
+                    moves.append(Move((l, c), (l - 1, c + 1), self.tabuleiro))
+
         if not self.brancoMove:  # movimento das peças pretas
             if self.tabuleiro[l + 1][c] == "--":  # avanço de uma casa do peão
                 moves.append(Move((l, c), (l + 1, c), self.tabuleiro))
@@ -71,6 +78,13 @@ class GameState:
                     l == 1 and self.tabuleiro[l + 2][c] == "--"
                 ):  # avanço de duas casas do peão
                     moves.append(Move((l, c), (l + 2, c), self.tabuleiro))
+
+            if c - 1 >= 0:  # captura no lado esquerdo
+                if self.tabuleiro[l + 1][c - 1][1] == "b":
+                    moves.append(Move((l, c), (l + 1, c - 1), self.tabuleiro))
+            if c + 1 <= 7:  # captura no lado direito
+                if self.tabuleiro[l + 1][c + 1][1] == "b":
+                    moves.append(Move((l, c), (l + 1, c + 1), self.tabuleiro))
 
     def torreMoves(self, l, c, moves):
         pass
