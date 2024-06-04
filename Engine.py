@@ -20,6 +20,14 @@ class GameState:
             ["Pb", "Pb", "Pb", "Pb", "Pb", "Pb", "Pb", "Pb"],
             ["Tb", "Cb", "Bb", "Qb", "Kb", "Bb", "Cb", "Tb"],
         ]
+        self.funcaoMovim = {
+            "P": self.peaoMoves,
+            "T": self.torreMoves,
+            "C": self.cavaloMoves,
+            "B": self.bispoMoves,
+            "Q": self.rainhaMoves,
+            "K": self.reiMoves,
+        }
 
         self.brancoMove = True
         self.movimentos = []
@@ -49,10 +57,7 @@ class GameState:
                     turno == "p" and not self.brancoMove
                 ):
                     peca = self.tabuleiro[l][c][0]
-                    if peca == "P":
-                        self.peaoMoves(l, c, moves)
-                    if peca == "t":
-                        self.torreMoves(l, c, moves)
+                    self.funcaoMovim[peca](l, c, moves)
         return moves
 
     def peaoMoves(self, l, c, moves):
@@ -87,6 +92,18 @@ class GameState:
                     moves.append(Move((l, c), (l + 1, c + 1), self.tabuleiro))
 
     def torreMoves(self, l, c, moves):
+        pass
+
+    def cavaloMoves(self, l, c, moves):
+        pass
+
+    def bispoMoves(self, l, c, moves):
+        pass
+
+    def rainhaMoves(self, l, c, moves):
+        pass
+
+    def reiMoves(self, l, c, moves):
         pass
 
 
