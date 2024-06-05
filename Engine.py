@@ -80,6 +80,7 @@ class GameState:
             # 4)Para cada movimento de peça, ve se ataca seu rei
             self.brancoMove = not self.brancoMove
             if self.emCheck():
+                print("check")
                 # 5) Se ataca seu rei, movimento inválido
                 moves.remove(moves[i])
             self.brancoMove = not self.brancoMove
@@ -87,7 +88,7 @@ class GameState:
         if len(moves) == 0:  # Se não tiver mais movimento para se fazer
             if self.emCheck():  # Verifica se esta em check
                 self.checkMate = True  # Checkmate
-                print(self.vez, "VENCEU")
+                print("CHECKMATE", self.vez, "VENCEU")
             else:  # caso contrario esta afogado
                 self.afogado = True
                 print("IIIH, afogou-se")
