@@ -70,9 +70,10 @@ def main():
                     if move in movalido:
                         gs.fazMove(move)
                         moveFeito = True
-
-                    quadradoSelec = ()
-                    cliqueJogador = []
+                        quadradoSelec = ()
+                        cliqueJogador = []
+                    else:
+                        cliqueJogador = [quadradoSelec]
 
             # teclado
             if e.type == p.KEYDOWN:

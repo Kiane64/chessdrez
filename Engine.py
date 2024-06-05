@@ -32,11 +32,19 @@ class GameState:
         self.brancoMove = True
         self.movimentos = []
 
+        self.locacaoReiBranco = (7, 4)
+        self.locacaoReiPreto = (0, 4)
+
     def fazMove(self, move):
         self.tabuleiro[move.linInicial][move.colInicial] = "--"
         self.tabuleiro[move.linFinal][move.colFinal] = move.pecaMovida
         self.movimentos.append(move)
         self.brancoMove = not self.brancoMove
+        # Ve se o rei moveu
+        if move.pecaMovida == "Rb":
+            self.locacaoReiBranco = (move.linFinal, move.colFinal)
+        if move.pecaMovida == "Rp":
+            self.locacaoReiPreto = (move.linFinal, move.colFinal)
 
     def desMove(self):
         if len(self.movimentos) != 0:  # verifica se tem movimento para desfazer
@@ -44,9 +52,57 @@ class GameState:
             self.tabuleiro[move.linInicial][move.colInicial] = move.pecaMovida
             self.tabuleiro[move.linFinal][move.colFinal] = move.pecaCapturada
             self.brancoMove = not self.brancoMove
+            # Ve se o rei moveu
+            if move.pecaMovida == "Rb":
+                self.locacaoReiBranco = (move.linInicial, move.colInicial)
+            if move.pecaMovida == "Rp":
+                self.locacaoReiPreto = (move.linInicial, move.colInicial)
+
+    """
+    Todos os movimentos considerando checks
+    """
 
     def movimentoValido(self):
-        return self.movimentoPossivel()
+        # 1)Gerar todos os movimentos possiveis
+        moves = self.movimentoPossivel()
+        # 2)Para cada movimento fazer um movimento
+        for i in range(len(moves) - 1, -1, -1):
+            self.fazMove(moves[i])
+            # 3)Gerar movimentos do oponente
+        return moves
+
+    """
+    Determina se o jogador esta em check
+    """
+
+    def emCheck(self):
+        if self.brancoMove:
+            return self.quadradoSobAtaque(
+                self.locacaoReiBranco[0], self.locacaoReiBranco[1]
+            )
+        else:
+            return self.quadradoSobAtaque(
+                self.locacaoReiPreto[0], self.locacaoReiPreto[1]
+            )
+
+    """
+    Determina se o oponente pode atacar em r,c
+    """
+
+    def quadradoSobAtaque(self, l, c):
+        self.brancoMove = not self.brancoMove  # Muda o turno
+        oppMoves = self.movimentoPossivel()
+        self.brancoMove = not self.brancoMove  # Muda turno de volta
+        for moves in oppMoves:
+            if (
+                moves.linFinal == l and moves.colFinal == c
+            ):  # Ve se o quadrado esta sob ataque
+                return True
+        return False
+
+    """
+    Todos os movimentos sem considerar checks
+    """
 
     def movimentoPossivel(self):
         moves = []
@@ -59,6 +115,10 @@ class GameState:
                     peca = self.tabuleiro[l][c][0]
                     self.funcaoMovim[peca](l, c, moves)
         return moves
+
+    """
+    Movimento dos peões
+    """
 
     def peaoMoves(self, l, c, moves):
         if self.brancoMove:  # movimento das peças brancas
@@ -91,6 +151,10 @@ class GameState:
                 if self.tabuleiro[l + 1][c + 1][1] == "b":
                     moves.append(Move((l, c), (l + 1, c + 1), self.tabuleiro))
 
+    """
+    Movimento das torres
+    """
+
     def torreMoves(self, l, c, moves):
         direcoes = (
             (-1, 0),
@@ -121,6 +185,10 @@ class GameState:
                 else:  # Fora do tabuleiro
                     break
 
+    """
+    Movimento dos cavalos
+    """
+
     def cavaloMoves(self, l, c, moves):
         cavaloMovimentos = (
             (-2, -1),
@@ -140,6 +208,10 @@ class GameState:
                 pecaFim = self.tabuleiro[linhaFim][colFim]
                 if pecaFim[1] != corAliada:
                     moves.append(Move((l, c), (linhaFim, colFim), (self.tabuleiro)))
+
+    """
+    Movimento dos bispos
+    """
 
     def bispoMoves(self, l, c, moves):
         diagonal = (
@@ -169,9 +241,17 @@ class GameState:
                 else:
                     break
 
+    """
+    Movimento da rainha
+    """
+
     def rainhaMoves(self, l, c, moves):
         self.torreMoves(l, c, moves)
         self.bispoMoves(l, c, moves)
+
+    """
+    Movimento do rei
+    """
 
     def reiMoves(self, l, c, moves):
         reiMovimentos = (
@@ -187,11 +267,11 @@ class GameState:
         corAliada = "b" if self.brancoMove else "p"
         for r in range(8):
             linhaFim = l + reiMovimentos[r][0]
-            colFim = c + reiMovimentos[r][1]
-            if 0 <= linhaFim < 8 and 0 <= colFim < 8:
-                pecaFim = self.tabuleiro[linhaFim][colFim]
+            colunaFim = c + reiMovimentos[r][1]
+            if 0 <= linhaFim < 8 and 0 <= colunaFim < 8:
+                pecaFim = self.tabuleiro[linhaFim][colunaFim]
                 if pecaFim[1] != corAliada:
-                    moves.append(Move((l, c), (linhaFim, colFim), (self.tabuleiro)))
+                    moves.append(Move((l, c), (linhaFim, colunaFim), (self.tabuleiro)))
 
 
 class Move:
