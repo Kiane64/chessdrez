@@ -92,33 +92,62 @@ class GameState:
                     moves.append(Move((l, c), (l + 1, c + 1), self.tabuleiro))
 
     def torreMoves(self, l, c, moves):
-        direcoes = ((-1, 0), (0, -1), (1, 0), (0, 1))
-        corInimiga = "p" if self.brancoMove else "b"
+        direcoes = (
+            (-1, 0),
+            (0, -1),
+            (1, 0),
+            (0, 1),
+        )  # Verifica cima, esquerda, baixo e direita
+        corInimiga = "p" if self.brancoMove else "b"  # Ou peça preta ou peça branca
         for d in direcoes:
             for i in range(1, 8):
                 linhaFim = l + d[0] * i
                 colunaFim = c + d[1] * i
-                if 0 <= linhaFim < 8 and 0 <= colunaFim < 8:
+                if 0 <= linhaFim < 8 and 0 <= colunaFim < 8:  # Vê se esta no tabuleiro
                     pecaFim = self.tabuleiro[linhaFim][colunaFim]
-                    if pecaFim == "--":
+                    if pecaFim == "--":  # Se vazio pode mover
                         moves.append(
                             Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
                         )
-                    elif pecaFim[1] == corInimiga:
+                    elif (
+                        pecaFim[1] == corInimiga
+                    ):  # Jeito mais rapido de verificar se a peça é do oponente ou não
                         moves.append(
                             Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
                         )
-                        break
+                        break  # Depois de verificar ele para de dar movimento válido
                     else:
-                        break
-                else:
+                        break  # Verifica peça aliada e para
+                else:  # Fora do tabuleiro
                     break
 
     def cavaloMoves(self, l, c, moves):
-        pass
+        cavaloMovimentos = (
+            (-2, -1),
+            (-2, 1),
+            (-1, -2),
+            (-1, 2),
+            (1, -2),
+            (1, 2),
+            (2, -1),
+            (2, 1),
+        )
+        corAliada = "b" if self.brancoMove else "p"
+        for m in cavaloMovimentos:
+            linhaFim = l + m[0]
+            colFim = c + m[1]
+            if 0 <= linhaFim < 8 and 0 <= colFim < 8:
+                pecaFim = self.tabuleiro[linhaFim][colFim]
+                if pecaFim[1] != corAliada:
+                    moves.append(Move((l, c), (linhaFim, colFim), (self.tabuleiro)))
 
     def bispoMoves(self, l, c, moves):
-        diagonal = ((1, 1), (-1, 1), (1, -1), (-1, -1))
+        diagonal = (
+            (1, 1),
+            (-1, 1),
+            (1, -1),
+            (-1, -1),
+        )  # Verifica diagonais, o restante é igual a torre
         corInimiga = "p" if self.brancoMove else "b"
         for d in diagonal:
             for i in range(1, 8):
