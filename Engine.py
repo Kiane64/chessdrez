@@ -92,7 +92,27 @@ class GameState:
                     moves.append(Move((l, c), (l + 1, c + 1), self.tabuleiro))
 
     def torreMoves(self, l, c, moves):
-        pass
+        direcoes = ((-1, 0), (0, -1), (1, 0), (0, 1))
+        corInimiga = "p" if self.brancoMove else "b"
+        for d in direcoes:
+            for i in range(1, 8):
+                linhaFim = l + d[0] * i
+                colunaFim = c + d[1] * i
+                if 0 <= linhaFim < 8 and 0 <= colunaFim < 8:
+                    pecaFim = self.tabuleiro[linhaFim][colunaFim]
+                    if pecaFim == "--":
+                        moves.append(
+                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
+                        )
+                    elif pecaFim[1] == corInimiga:
+                        moves.append(
+                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
+                        )
+                        break
+                    else:
+                        break
+                else:
+                    break
 
     def cavaloMoves(self, l, c, moves):
         pass
