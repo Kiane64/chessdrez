@@ -170,36 +170,8 @@ class GameState:
                     break
 
     def rainhaMoves(self, l, c, moves):
-        direcoes = (
-            (-1, 0),
-            (0, -1),
-            (1, 0),
-            (0, 1),
-            (1, 1),
-            (-1, 1),
-            (1, -1),
-            (-1, -1),
-        )
-        corInimiga = "p" if self.brancoMove else "b"
-        for d in direcoes:
-            for i in range(1, 8):
-                linhaFim = l + d[0] * i
-                colunaFim = c + d[1] * i
-                if 0 <= linhaFim < 8 and 0 <= colunaFim < 8:
-                    pecaFim = self.tabuleiro[linhaFim][colunaFim]
-                    if pecaFim == "--":
-                        moves.append(
-                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
-                        )
-                    elif pecaFim[1] == corInimiga:
-                        moves.append(
-                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
-                        )
-                        break
-                    else:
-                        break
-                else:
-                    break
+        self.torreMoves(l, c, moves)
+        self.bispoMoves(l, c, moves)
 
     def reiMoves(self, l, c, moves):
         reiMovimentos = (
@@ -213,9 +185,9 @@ class GameState:
             (1, 1),
         )
         corAliada = "b" if self.brancoMove else "p"
-        for r in reiMovimentos:
-            linhaFim = l + r[0]
-            colFim = c + r[1]
+        for r in range(8):
+            linhaFim = l + reiMovimentos[r][0]
+            colFim = c + reiMovimentos[r][1]
             if 0 <= linhaFim < 8 and 0 <= colFim < 8:
                 pecaFim = self.tabuleiro[linhaFim][colFim]
                 if pecaFim[1] != corAliada:
