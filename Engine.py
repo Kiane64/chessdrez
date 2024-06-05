@@ -69,6 +69,14 @@ class GameState:
         for i in range(len(moves) - 1, -1, -1):
             self.fazMove(moves[i])
             # 3)Gerar movimentos do oponente
+            # 4)Para cada movimento de peça, ve se ataca seu rei
+            self.brancoMove = not self.brancoMove
+            if self.emCheck():
+                # 5) Se ataca seu rei, movimento inválido
+                moves.remove(moves[i])
+            self.brancoMove = not self.brancoMove
+            self.desMove()
+
         return moves
 
     """
@@ -91,12 +99,14 @@ class GameState:
 
     def quadradoSobAtaque(self, l, c):
         self.brancoMove = not self.brancoMove  # Muda o turno
-        oppMoves = self.movimentoPossivel()
+        oppMoves = (
+            self.movimentoPossivel()
+        )  # Pega todos os movimentos de todas as peças do oponente
         self.brancoMove = not self.brancoMove  # Muda turno de volta
         for moves in oppMoves:
             if (
                 moves.linFinal == l and moves.colFinal == c
-            ):  # Ve se o quadrado esta sob ataque
+            ):  # Ve se cada quadrado esta sob ataque
                 return True
         return False
 
