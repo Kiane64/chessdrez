@@ -202,7 +202,24 @@ class GameState:
                     break
 
     def reiMoves(self, l, c, moves):
-        pass
+        reiMovimentos = (
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, -1),
+            (0, 1),
+            (1, -1),
+            (1, 0),
+            (1, 1),
+        )
+        corAliada = "b" if self.brancoMove else "p"
+        for r in reiMovimentos:
+            linhaFim = l + r[0]
+            colFim = c + r[1]
+            if 0 <= linhaFim < 8 and 0 <= colFim < 8:
+                pecaFim = self.tabuleiro[linhaFim][colFim]
+                if pecaFim[1] != corAliada:
+                    moves.append(Move((l, c), (linhaFim, colFim), (self.tabuleiro)))
 
 
 class Move:
