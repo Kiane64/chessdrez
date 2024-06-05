@@ -30,12 +30,20 @@ class GameState:
         }
 
         self.brancoMove = True
+        self.vez = ""
         self.movimentos = []
+        self.checkMate = False
+        self.afogado = False
 
         self.locacaoReiBranco = (7, 4)
         self.locacaoReiPreto = (0, 4)
 
     def fazMove(self, move):
+        if self.brancoMove == True:
+            self.vez = "PRETO"
+        else:
+            self.vez = "BRANCO"
+
         self.tabuleiro[move.linInicial][move.colInicial] = "--"
         self.tabuleiro[move.linFinal][move.colFinal] = move.pecaMovida
         self.movimentos.append(move)
@@ -76,6 +84,16 @@ class GameState:
                 moves.remove(moves[i])
             self.brancoMove = not self.brancoMove
             self.desMove()
+        if len(moves) == 0:  # Se não tiver mais movimento para se fazer
+            if self.emCheck():  # Verifica se esta em check
+                self.checkMate = True  # Checkmate
+                print(self.vez, "VENCEU")
+            else:  # caso contrario esta afogado
+                self.afogado = True
+                print("IIIH, afogou-se")
+        else:  # apenas para a função desMove
+            self.checkMate = False
+            self.afogado = False
 
         return moves
 
