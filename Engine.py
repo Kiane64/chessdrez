@@ -41,9 +41,9 @@ class GameState:
         self.movimentos.append(move)
         self.brancoMove = not self.brancoMove
         # Ve se o rei moveu
-        if move.pecaMovida == "Rb":
+        if move.pecaMovida == "Kb":
             self.locacaoReiBranco = (move.linFinal, move.colFinal)
-        if move.pecaMovida == "Rp":
+        if move.pecaMovida == "Kp":
             self.locacaoReiPreto = (move.linFinal, move.colFinal)
 
     def desMove(self):
@@ -53,9 +53,9 @@ class GameState:
             self.tabuleiro[move.linFinal][move.colFinal] = move.pecaCapturada
             self.brancoMove = not self.brancoMove
             # Ve se o rei moveu
-            if move.pecaMovida == "Rb":
+            if move.pecaMovida == "Kb":
                 self.locacaoReiBranco = (move.linInicial, move.colInicial)
-            if move.pecaMovida == "Rp":
+            if move.pecaMovida == "Kp":
                 self.locacaoReiPreto = (move.linInicial, move.colInicial)
 
     """
