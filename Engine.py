@@ -118,7 +118,27 @@ class GameState:
         pass
 
     def bispoMoves(self, l, c, moves):
-        pass
+        diagonal = ((1, 1), (-1, 1), (1, -1), (-1, -1))
+        corInimiga = "p" if self.brancoMove else "b"
+        for d in diagonal:
+            for i in range(1, 8):
+                linhaFim = l + d[0] * i
+                colunaFim = c + d[1] * i
+                if 0 <= linhaFim < 8 and 0 <= colunaFim < 8:
+                    pecaFim = self.tabuleiro[linhaFim][colunaFim]
+                    if pecaFim == "--":
+                        moves.append(
+                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
+                        )
+                    elif pecaFim[1] == corInimiga:
+                        moves.append(
+                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
+                        )
+                        break
+                    else:
+                        break
+                else:
+                    break
 
     def rainhaMoves(self, l, c, moves):
         pass
