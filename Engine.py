@@ -59,6 +59,20 @@ class GameState:
         if move.peaoPromovido:
             self.tabuleiro[move.linFinal][move.colFinal] = "Q" + move.pecaMovida[1]
 
+        # Movimento En Passant
+        if move.enPassantMove:
+            self.tabuleiro[move.linInicial][move.colFinal] = "--"
+
+        # Atualizar as variaveis do enPassant
+
+        if move.pecaMovida[0] == "P" and abs(move.linInicial - move.linFinal) == 2:
+            self.enPassantssivel = (
+                (move.linInicial + move.linFinal) // 2,
+                move.colInicial,
+            )
+        else:
+            self.enPassantssivel = ()
+
     def desMove(self):
         if len(self.movimentos) != 0:  # verifica se tem movimento para desfazer
             move = self.movimentos.pop()
@@ -71,11 +85,20 @@ class GameState:
             if move.pecaMovida == "Kp":
                 self.locacaoReiPreto = (move.linInicial, move.colInicial)
 
+            # desfazer En Passant
+            if move.enPassantMove:
+                self.tabuleiro[move.linFinal][move.colFinal] = "--"
+                self.tabuleiro[move.linInicial][move.colFinal] = move.pecaCapturada
+                self.enPassantssivel = (move.linFinal, move.colFinal)
+            if move.pecaMovida[0] == "P" and abs(move.linInicial - move.linFinal) == 2:
+                self.enPassantssivel = ()
+
     """
     Todos os movimentos considerando checks
     """
 
     def movimentoValido(self):
+        tempoEnPassant = self.enPassantssivel
         # 1)Gerar todos os movimentos possiveis
         moves = self.movimentoPossivel()
         # 2)Para cada movimento fazer um movimento
@@ -100,7 +123,7 @@ class GameState:
         else:  # apenas para a função desMove
             self.checkMate = False
             self.afogado = False
-
+        self.enPassantssivel = tempoEnPassant
         return moves
 
     """
@@ -166,9 +189,17 @@ class GameState:
             if c - 1 >= 0:  # captura no lado esquerdo
                 if self.tabuleiro[l - 1][c - 1][1] == "p":
                     moves.append(Move((l, c), (l - 1, c - 1), self.tabuleiro))
+                elif (l - 1, c - 1) == self.enPassantssivel:
+                    moves.append(
+                        Move((l, c), (l - 1, c - 1), self.tabuleiro, enPassantMove=True)
+                    )
             if c + 1 <= 7:  # captura no lado direito
                 if self.tabuleiro[l - 1][c + 1][1] == "p":
                     moves.append(Move((l, c), (l - 1, c + 1), self.tabuleiro))
+                elif (l - 1, c + 1) == self.enPassantssivel:
+                    moves.append(
+                        Move((l, c), (l - 1, c + 1), self.tabuleiro, enPassantMove=True)
+                    )
 
         if not self.brancoMove:  # movimento das peças pretas
             if self.tabuleiro[l + 1][c] == "--":  # avanço de uma casa do peão
@@ -181,9 +212,17 @@ class GameState:
             if c - 1 >= 0:  # captura no lado esquerdo
                 if self.tabuleiro[l + 1][c - 1][1] == "b":
                     moves.append(Move((l, c), (l + 1, c - 1), self.tabuleiro))
+                elif (l + 1, c - 1) == self.enPassantssivel:
+                    moves.append(
+                        Move((l, c), (l + 1, c - 1), self.tabuleiro, enPassantMove=True)
+                    )
             if c + 1 <= 7:  # captura no lado direito
                 if self.tabuleiro[l + 1][c + 1][1] == "b":
                     moves.append(Move((l, c), (l + 1, c + 1), self.tabuleiro))
+                elif (l + 1, c + 1) == self.enPassantssivel:
+                    moves.append(
+                        Move((l, c), (l + 1, c + 1), self.tabuleiro, enPassantMove=True)
+                    )
 
     """
     Movimento das torres
@@ -315,7 +354,7 @@ class Move:
     filestoCols = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
     colstoFiles = {v: k for k, v in filestoCols.items()}
 
-    def __init__(self, qdinicial, qdfinal, tabuleiro, enPassantssivel=()):
+    def __init__(self, qdinicial, qdfinal, tabuleiro, enPassantMove=False):
         self.linInicial = qdinicial[0]
         self.colInicial = qdinicial[1]
         self.linFinal = qdfinal[0]
@@ -328,10 +367,9 @@ class Move:
         )
 
         # En PASSANT
-        self.enPassantMove = (
-            self.pecaMovida[0] == "P"
-            and (self.linFinal, self.colFinal) == enPassantssivel
-        )
+        self.enPassantMove = enPassantMove
+        if self.enPassantMove:
+            self.pecaCapturada = "Pb" if self.pecaMovida == "Pp" else "Pp"
 
         self.moveID = (
             self.linInicial * 1000
