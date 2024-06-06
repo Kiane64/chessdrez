@@ -34,6 +34,7 @@ class GameState:
         self.movimentos = []
         self.checkMate = False
         self.afogado = False
+        self.enPassantssivel = ()  # coordenadas do quadrado em que o en passant é possivel
 
         self.locacaoReiBranco = (7, 4)
         self.locacaoReiPreto = (0, 4)
@@ -314,18 +315,24 @@ class Move:
     filestoCols = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
     colstoFiles = {v: k for k, v in filestoCols.items()}
 
-    def __init__(self, qdinicial, qdfinal, tabuleiro):
+    def __init__(self, qdinicial, qdfinal, tabuleiro, enPassantssivel=()):
         self.linInicial = qdinicial[0]
         self.colInicial = qdinicial[1]
         self.linFinal = qdfinal[0]
         self.colFinal = qdfinal[1]
         self.pecaMovida = tabuleiro[self.linInicial][self.colInicial]
         self.pecaCapturada = tabuleiro[self.linFinal][self.colFinal]
-        self.peaoPromovido = False
-        if (self.pecaMovida == "Pb" and self.linFinal == 0) or (
+        # Promoção do peão
+        self.peaoPromovido = (self.pecaMovida == "Pb" and self.linFinal == 0) or (
             self.pecaMovida == "Pp" and self.linFinal == 7
-        ):
-            self.peaoPromovido = True
+        )
+
+        # En PASSANT
+        self.enPassantMove = (
+            self.pecaMovida[0] == "P"
+            and (self.linFinal, self.colFinal) == enPassantssivel
+        )
+
         self.moveID = (
             self.linInicial * 1000
             + self.colInicial * 100
