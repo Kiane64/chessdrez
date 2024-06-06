@@ -5,7 +5,7 @@ Aqui está nosso principal, será responsável por nos mostrar o jogo
 import pygame as p
 import Engine
 
-LARGURA = ALTURA = 512
+LARGURA = ALTURA = 712
 DIMENSAO = 8
 SQ_SIZE = ALTURA // DIMENSAO
 FPS = 60
@@ -67,12 +67,13 @@ def main():
                 if len(cliqueJogador) == 2:  # movimento
                     move = Engine.Move(cliqueJogador[0], cliqueJogador[1], gs.tabuleiro)
                     print(move.xadrezNotacao())
-                    if move in movalido:
-                        gs.fazMove(move)
-                        moveFeito = True
-                        quadradoSelec = ()
-                        cliqueJogador = []
-                    else:
+                    for i in range(len(movalido)):
+                        if move == movalido[i]:
+                            gs.fazMove(movalido[i])
+                            moveFeito = True
+                            quadradoSelec = ()
+                            cliqueJogador = []
+                    if not moveFeito:
                         cliqueJogador = [quadradoSelec]
 
             # teclado

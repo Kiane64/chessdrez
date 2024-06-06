@@ -54,6 +54,10 @@ class GameState:
         if move.pecaMovida == "Kp":
             self.locacaoReiPreto = (move.linFinal, move.colFinal)
 
+        # Promoção do Peão
+        if move.peaoPromovido:
+            self.tabuleiro[move.linFinal][move.colFinal] = "Q" + move.pecaMovida[1]
+
     def desMove(self):
         if len(self.movimentos) != 0:  # verifica se tem movimento para desfazer
             move = self.movimentos.pop()
@@ -317,6 +321,11 @@ class Move:
         self.colFinal = qdfinal[1]
         self.pecaMovida = tabuleiro[self.linInicial][self.colInicial]
         self.pecaCapturada = tabuleiro[self.linFinal][self.colFinal]
+        self.peaoPromovido = False
+        if (self.pecaMovida == "Pb" and self.linFinal == 0) or (
+            self.pecaMovida == "Pp" and self.linFinal == 7
+        ):
+            self.peaoPromovido = True
         self.moveID = (
             self.linInicial * 1000
             + self.colInicial * 100
