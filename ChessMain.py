@@ -10,6 +10,7 @@ DIMENSAO = 8
 SQ_SIZE = ALTURA // DIMENSAO
 FPS = 60
 IMAGENS = {}
+bl = 5
 
 """
 Aqui estara nosso dicionario de imagens, carregadas apenas uma vez para não causar lag
@@ -85,7 +86,7 @@ def main():
             movalido = gs.movimentoValido()
             moveFeito = False
 
-        drawGameState(tela, gs)
+        drawGameState(tela, gs, movalido, quadradoSelec)
         clock.tick(FPS)
         p.display.flip()
 
@@ -95,8 +96,32 @@ Responsável por toda visualização
 """
 
 
-def drawGameState(tela, gs):
+def Ilumination(tela, gs, movalido, quadradoSelec):
+    if quadradoSelec != ():
+        l, c = quadradoSelec
+        if gs.tabuleiro[l][c][1] == (
+            "b" if gs.brancoMove else "p"
+        ):  # peça quue pode ser movida
+            # peça selecionado
+            s = p.Surface((SQ_SIZE - (bl * 2), SQ_SIZE - (bl * 2)))
+            s.fill(p.Color("red4"))
+            tela.blit(s, (c * SQ_SIZE + bl, l * SQ_SIZE + bl))
+
+            # movimento da peça
+            s.fill(p.Color("gold2"))
+            for move in movalido:
+                if move.linInicial == l and move.colInicial == c:
+                    tela.blit(
+                        s,
+                        (move.colFinal * SQ_SIZE + bl, move.linFinal * SQ_SIZE + bl),
+                    )
+
+
+def drawGameState(tela, gs, movalido, quadradoSelec):
     desenharTab(tela)  # desenha os quadrados do tabuleiro
+    Ilumination(
+        tela, gs, movalido, quadradoSelec
+    )  # Desenha o highlight da peça e movimento dela
     desenharPeças(tela, gs.tabuleiro)  # advinha
 
 
