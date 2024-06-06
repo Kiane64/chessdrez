@@ -35,6 +35,15 @@ class GameState:
         self.checkMate = False
         self.afogado = False
         self.enPassantssivel = ()  # coordenadas do quadrado em que o en passant é possivel
+        self.atualDireitoCastelal = direitoCastelal(True, True, True, True)
+        self.castelalLog = [
+            direitoCastelal(
+                self.atualDireitoCastelal.wks,
+                self.atualDireitoCastelal.bks,
+                self.atualDireitoCastelal.wqs,
+                self.atualDireitoCastelal.bqs,
+            )
+        ]
 
         self.locacaoReiBranco = (7, 4)
         self.locacaoReiPreto = (0, 4)
@@ -73,6 +82,35 @@ class GameState:
         else:
             self.enPassantssivel = ()
 
+        # Roque
+        if move.roque:
+            if move.colFinal - move.colInicial == 2:  # Roque do lado do rei
+                self.tabuleiro[move.linFinal][move.colFinal - 1] = self.tabuleiro[
+                    move.linFinal
+                ][
+                    move.colFinal + 1
+                ]  # move a torre
+                self.tabuleiro[move.linFinal][move.colFinal + 1] = "--"  # apaga ela
+            else:  # Lado da rainha
+                self.tabuleiro[move.linFinal][move.colFinal + 1] = self.tabuleiro[
+                    move.linFinal
+                ][
+                    move.colFinal - 2
+                ]  # move a torre
+                self.tabuleiro[move.linFinal][move.colFinal - 2] = "--"
+
+        # Atualizar o castelalLog - tanto para rei quanto para peão
+
+        self.atualizarDireitoCastelar(move)
+        self.castelalLog.append(
+            direitoCastelal(
+                self.atualDireitoCastelal.wks,
+                self.atualDireitoCastelal.bks,
+                self.atualDireitoCastelal.wqs,
+                self.atualDireitoCastelal.bqs,
+            )
+        )
+
     def desMove(self):
         if len(self.movimentos) != 0:  # verifica se tem movimento para desfazer
             move = self.movimentos.pop()
@@ -92,6 +130,54 @@ class GameState:
                 self.enPassantssivel = (move.linFinal, move.colFinal)
             if move.pecaMovida[0] == "P" and abs(move.linInicial - move.linFinal) == 2:
                 self.enPassantssivel = ()
+            # desfazer direito castelal
+
+            self.castelalLog.pop()
+            novoDireito = self.castelalLog[-1]
+            self.atualDireitoCastelal = direitoCastelal(
+                novoDireito.wks, novoDireito.bks, novoDireito.wqs, novoDireito.bqs
+            )
+
+            # Desfazer roque
+            if move.roque:
+                if move.colFinal - move.colInicial == 2:  # Lado do rei
+                    self.tabuleiro[move.linFinal][move.colFinal + 1] = self.tabuleiro[
+                        move.linFinal
+                    ][
+                        move.colFinal - 1
+                    ]  # move a torre
+                    self.tabuleiro[move.linFinal][move.colFinal - 1] = "--"  # apaga ela
+                else:  # Lado da rainha
+                    self.tabuleiro[move.linFinal][move.colFinal - 2] = self.tabuleiro[
+                        move.linFinal
+                    ][
+                        move.colFinal + 1
+                    ]  # move a torre
+                    self.tabuleiro[move.linFinal][move.colFinal + 1] = "--"
+
+    """
+    Analisa o direito de roque
+    """
+
+    def atualizarDireitoCastelar(self, move):
+        if move.pecaMovida == "Kb":  # se rei branco se moveu
+            self.atualDireitoCastelal.wks = False
+            self.atualDireitoCastelal.wqs = False
+        elif move.pecaMovida == "Kp":  # se rei preto se moveu
+            self.atualDireitoCastelal.bks = False
+            self.atualDireitoCastelal.bqs = False
+        elif move.pecaMovida == "Tb":  # Se torre branca se moveu
+            if move.linInicial == 7:
+                if move.colInicial == 0:  # Torre da esquerda
+                    self.atualDireitoCastelal.wqs = False
+                elif move.colInicial == 7:  # Torre da direita
+                    self.atualDireitoCastelal.wks = False
+        elif move.pecaMovida == "Tp":  # Se torre preta se moveu
+            if move.linInicial == 0:
+                if move.colInicial == 0:  # Torre da esquerda
+                    self.atualDireitoCastelal.bqs = False
+                elif move.colInicial == 7:  # Torre da direita
+                    self.atualDireitoCastelal.bks = False
 
     """
     Todos os movimentos considerando checks
@@ -99,8 +185,18 @@ class GameState:
 
     def movimentoValido(self):
         tempoEnPassant = self.enPassantssivel
+        tempoRoque = direitoCastelal(
+            self.atualDireitoCastelal.wks,
+            self.atualDireitoCastelal.bks,
+            self.atualDireitoCastelal.wqs,
+            self.atualDireitoCastelal.bqs,
+        )
         # 1)Gerar todos os movimentos possiveis
         moves = self.movimentoPossivel()
+        if self.brancoMove:
+            self.roque(self.locacaoReiBranco[0], self.locacaoReiBranco[1], moves)
+        else:
+            self.roque(self.locacaoReiPreto[0], self.locacaoReiPreto[1], moves)
         # 2)Para cada movimento fazer um movimento
         for i in range(len(moves) - 1, -1, -1):
             self.fazMove(moves[i])
@@ -123,6 +219,7 @@ class GameState:
         else:  # apenas para a função desMove
             self.checkMate = False
             self.afogado = False
+        self.atualDireitoCastelal = tempoRoque
         self.enPassantssivel = tempoEnPassant
         return moves
 
@@ -346,6 +443,48 @@ class GameState:
                 if pecaFim[1] != corAliada:
                     moves.append(Move((l, c), (linhaFim, colunaFim), (self.tabuleiro)))
 
+    """
+    Gerar todos os movimentos válidos de roque para linha(l) e coluna(c)
+    """
+
+    def roque(self, l, c, moves):
+        if self.quadradoSobAtaque(l, c):
+            return  # não pode fazer roque se em check
+        if (self.brancoMove and self.atualDireitoCastelal.wks) or (
+            not self.brancoMove and self.atualDireitoCastelal.bks
+        ):
+            self.roqueLadoRei(l, c, moves)
+        if (self.brancoMove and self.atualDireitoCastelal.wqs) or (
+            not self.brancoMove and self.atualDireitoCastelal.bqs
+        ):
+            self.roqueLadoRainha(l, c, moves)
+
+    def roqueLadoRei(self, l, c, moves):
+        if self.tabuleiro[l][c + 1] == "--" and self.tabuleiro[l][c + 2] == "--":
+            if not self.quadradoSobAtaque(l, c + 1) and not self.quadradoSobAtaque(
+                l, c + 2
+            ):
+                moves.append(Move((l, c), (l, c + 2), self.tabuleiro, roque=True))
+
+    def roqueLadoRainha(self, l, c, moves):
+        if (
+            self.tabuleiro[l][c - 1] == "--"
+            and self.tabuleiro[l][c - 2] == "--"
+            and self.tabuleiro[l][c - 3] == "--"
+        ):
+            if not self.quadradoSobAtaque(l, c - 1) and not self.quadradoSobAtaque(
+                l, c - 2
+            ):
+                moves.append(Move((l, c), (l, c - 2), self.tabuleiro, roque=True))
+
+
+class direitoCastelal:
+    def __init__(self, wks, bks, wqs, bqs):
+        self.wks = wks
+        self.bks = bks
+        self.wqs = wqs
+        self.bqs = bqs
+
 
 class Move:
 
@@ -354,7 +493,7 @@ class Move:
     filestoCols = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
     colstoFiles = {v: k for k, v in filestoCols.items()}
 
-    def __init__(self, qdinicial, qdfinal, tabuleiro, enPassantMove=False):
+    def __init__(self, qdinicial, qdfinal, tabuleiro, enPassantMove=False, roque=False):
         self.linInicial = qdinicial[0]
         self.colInicial = qdinicial[1]
         self.linFinal = qdfinal[0]
@@ -370,6 +509,9 @@ class Move:
         self.enPassantMove = enPassantMove
         if self.enPassantMove:
             self.pecaCapturada = "Pb" if self.pecaMovida == "Pp" else "Pp"
+
+        # Roque
+        self.roque = roque
 
         self.moveID = (
             self.linInicial * 1000
