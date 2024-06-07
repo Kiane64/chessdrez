@@ -23,7 +23,9 @@ Aqui estara nosso dicionario de imagens, carregadas apenas uma vez para não cau
 def carregarImagens():
     peças = ["Tp", "Cp", "Bp", "Qp", "Kp", "Pp", "Tb", "Cb", "Bb", "Qb", "Kb", "Pb"]
     for peça in peças:
-        IMAGENS[peça] = p.transform.scale(p.image.load("chess/chessimages/" + peça + ".png"), (SQ_SIZE, SQ_SIZE))
+        IMAGENS[peça] = p.transform.scale(
+            p.image.load("./chessimages/" + peça + ".png"), (SQ_SIZE, SQ_SIZE)
+        )
         # podemos chamar qualquer peça usando IMAGENS["nome da peça"]
 
 
@@ -100,7 +102,9 @@ Responsável por toda visualização
 def Ilumination(tela, gs, movalido, quadradoSelec):
     if quadradoSelec != ():
         l, c = quadradoSelec
-        if gs.tabuleiro[l][c][1] == ("b" if gs.brancoMove else "p"):  # peça quue pode ser movida
+        if gs.tabuleiro[l][c][1] == (
+            "b" if gs.brancoMove else "p"
+        ):  # peça quue pode ser movida
             # peça selecionado
             s = p.Surface((SQ_SIZE - (bl * 2), SQ_SIZE - (bl * 2)))
             s.fill(p.Color("red4"))
@@ -118,7 +122,9 @@ def Ilumination(tela, gs, movalido, quadradoSelec):
 
 def drawGameState(tela, gs, movalido, quadradoSelec):
     desenharTab(tela)  # desenha os quadrados do tabuleiro
-    Ilumination(tela, gs, movalido, quadradoSelec)  # Desenha o highlight da peça e movimento dela
+    Ilumination(
+        tela, gs, movalido, quadradoSelec
+    )  # Desenha o highlight da peça e movimento dela
     desenharPeças(tela, gs.tabuleiro)  # advinha
 
 
@@ -135,7 +141,9 @@ def desenharPeças(tela, tabuleiro):
         for c in range(DIMENSAO):
             peça = tabuleiro[l][c]
             if peça != "--":
-                tela.blit(IMAGENS[peça], p.Rect(c * SQ_SIZE, l * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+                tela.blit(
+                    IMAGENS[peça], p.Rect(c * SQ_SIZE, l * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+                )
 
 
 if __name__ == "__main__":
