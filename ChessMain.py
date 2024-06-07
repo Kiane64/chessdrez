@@ -30,7 +30,7 @@ def carregarImagens():
 
 
 """
-Nosso PRINCIPAL, tera as informações que o jogador colocara e os graphics brrooo
+Nosso PRINCIPAL, tera as informações que o jogador colocara e os graphics brroooo
 """
 
 
