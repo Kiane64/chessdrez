@@ -8,12 +8,12 @@ import colorama
 
 colorama.init()
 
-LARGURA = ALTURA = 712
+LARGURA = ALTURA = 640
 DIMENSAO = 8
 SQ_SIZE = ALTURA // DIMENSAO
 FPS = 60
 IMAGENS = {}
-bl = 5
+largura = 5
 
 """
 Aqui estara nosso dicionario de imagens, carregadas apenas uma vez para não causar lag
@@ -106,9 +106,9 @@ def Ilumination(tela, gs, movalido, quadradoSelec):
             "b" if gs.brancoMove else "p"
         ):  # peça quue pode ser movida
             # peça selecionado
-            s = p.Surface((SQ_SIZE - (bl * 2), SQ_SIZE - (bl * 2)))
+            s = p.Surface((SQ_SIZE - (largura * 2), SQ_SIZE - (largura * 2)))
             s.fill(p.Color("red4"))
-            tela.blit(s, (c * SQ_SIZE + bl, l * SQ_SIZE + bl))
+            tela.blit(s, (c * SQ_SIZE + largura, l * SQ_SIZE + largura))
 
             # movimento da peça
             s.fill(p.Color("gold2"))
@@ -116,7 +116,10 @@ def Ilumination(tela, gs, movalido, quadradoSelec):
                 if move.linInicial == l and move.colInicial == c:
                     tela.blit(
                         s,
-                        (move.colFinal * SQ_SIZE + bl, move.linFinal * SQ_SIZE + bl),
+                        (
+                            move.colFinal * SQ_SIZE + largura,
+                            move.linFinal * SQ_SIZE + largura,
+                        ),
                     )
 
 
