@@ -88,10 +88,18 @@ class GameState:
         # Roque
         if move.roque:
             if move.colFinal - move.colInicial == 2:  # Roque do lado do rei
-                self.tabuleiro[move.linFinal][move.colFinal - 1] = self.tabuleiro[move.linFinal][move.colFinal + 1]  # move a torre
+                self.tabuleiro[move.linFinal][move.colFinal - 1] = self.tabuleiro[
+                    move.linFinal
+                ][
+                    move.colFinal + 1
+                ]  # move a torre
                 self.tabuleiro[move.linFinal][move.colFinal + 1] = "--"  # apaga ela
             else:  # Lado da rainha
-                self.tabuleiro[move.linFinal][move.colFinal + 1] = self.tabuleiro[move.linFinal][move.colFinal - 2]  # move a torre
+                self.tabuleiro[move.linFinal][move.colFinal + 1] = self.tabuleiro[
+                    move.linFinal
+                ][
+                    move.colFinal - 2
+                ]  # move a torre
                 self.tabuleiro[move.linFinal][move.colFinal - 2] = "--"
 
         # Atualizar o castelalLog - tanto para rei quanto para peão
@@ -129,15 +137,25 @@ class GameState:
 
             self.castelalLog.pop()
             novoDireito = self.castelalLog[-1]
-            self.atualDireitoCastelal = direitoCastelal(novoDireito.wks, novoDireito.bks, novoDireito.wqs, novoDireito.bqs)
+            self.atualDireitoCastelal = direitoCastelal(
+                novoDireito.wks, novoDireito.bks, novoDireito.wqs, novoDireito.bqs
+            )
 
             # Desfazer roque
             if move.roque:
                 if move.colFinal - move.colInicial == 2:  # Lado do rei
-                    self.tabuleiro[move.linFinal][move.colFinal + 1] = self.tabuleiro[move.linFinal][move.colFinal - 1]  # move a torre
+                    self.tabuleiro[move.linFinal][move.colFinal + 1] = self.tabuleiro[
+                        move.linFinal
+                    ][
+                        move.colFinal - 1
+                    ]  # move a torre
                     self.tabuleiro[move.linFinal][move.colFinal - 1] = "--"  # apaga ela
                 else:  # Lado da rainha
-                    self.tabuleiro[move.linFinal][move.colFinal - 2] = self.tabuleiro[move.linFinal][move.colFinal + 1]  # move a torre
+                    self.tabuleiro[move.linFinal][move.colFinal - 2] = self.tabuleiro[
+                        move.linFinal
+                    ][
+                        move.colFinal + 1
+                    ]  # move a torre
                     self.tabuleiro[move.linFinal][move.colFinal + 1] = "--"
 
     """
@@ -189,7 +207,7 @@ class GameState:
             # 4)Para cada movimento de peça, ve se ataca seu rei
             self.brancoMove = not self.brancoMove
             if self.emCheck():
-                print(f"\033[0;43mCHECK\033[0m")
+                print(f"\033[0;43m CHECK \033[0m")
                 # 5) Se ataca seu rei, movimento inválido
                 moves.remove(moves[i])
             self.brancoMove = not self.brancoMove
@@ -198,12 +216,16 @@ class GameState:
             if self.emCheck():  # Verifica se esta em check
                 self.checkMate = True  # Checkmate
                 if self.vez == "BRANCO":
-                    print(f"\033[0mCHECKMATE \033[0;30;47m{self.vez}\033[0m VENCEU\033[0m")
+                    print(
+                        f"\033[0mCHECKMATE \033[0;30;47m {self.vez} \033[0m VENCEU\033[0m"
+                    )
                 else:
-                    print(f"\033[0mCHECKMATE \033[0;40;97m{self.vez}\033[0m VENCEU\033[0m")
+                    print(
+                        f"\033[0mCHECKMATE \033[0;100;97m {self.vez} \033[0m VENCEU\033[0m"
+                    )
             else:  # caso contrario esta afogado
                 self.afogado = True
-                print("IIIH, afogou-se")
+                print(f"IIIH, \033[46mAFOGOU-SE\033[0m")
         else:  # apenas para a função desMove
             self.checkMate = False
             self.afogado = False
@@ -217,9 +239,13 @@ class GameState:
 
     def emCheck(self):
         if self.brancoMove:
-            return self.quadradoSobAtaque(self.locacaoReiBranco[0], self.locacaoReiBranco[1])
+            return self.quadradoSobAtaque(
+                self.locacaoReiBranco[0], self.locacaoReiBranco[1]
+            )
         else:
-            return self.quadradoSobAtaque(self.locacaoReiPreto[0], self.locacaoReiPreto[1])
+            return self.quadradoSobAtaque(
+                self.locacaoReiPreto[0], self.locacaoReiPreto[1]
+            )
 
     """
     Determina se o oponente pode atacar em r,c
@@ -227,10 +253,14 @@ class GameState:
 
     def quadradoSobAtaque(self, l, c):
         self.brancoMove = not self.brancoMove  # Muda o turno
-        oppMoves = self.movimentoPossivel()  # Pega todos os movimentos de todas as peças do oponente
+        oppMoves = (
+            self.movimentoPossivel()
+        )  # Pega todos os movimentos de todas as peças do oponente
         self.brancoMove = not self.brancoMove  # Muda turno de volta
         for moves in oppMoves:
-            if moves.linFinal == l and moves.colFinal == c:  # Ve se cada quadrado esta sob ataque
+            if (
+                moves.linFinal == l and moves.colFinal == c
+            ):  # Ve se cada quadrado esta sob ataque
                 return True
         return False
 
@@ -243,7 +273,9 @@ class GameState:
         for l in range(len(self.tabuleiro)):
             for c in range(len(self.tabuleiro[l])):
                 turno = self.tabuleiro[l][c][1]
-                if (turno == "b" and self.brancoMove) or (turno == "p" and not self.brancoMove):
+                if (turno == "b" and self.brancoMove) or (
+                    turno == "p" and not self.brancoMove
+                ):
                     peca = self.tabuleiro[l][c][0]
                     self.funcaoMovim[peca](l, c, moves)
         return moves
@@ -256,36 +288,48 @@ class GameState:
         if self.brancoMove:  # movimento das peças brancas
             if self.tabuleiro[l - 1][c] == "--":  # avanço de uma casa do peão
                 moves.append(Move((l, c), (l - 1, c), self.tabuleiro))
-                if l == 6 and self.tabuleiro[l - 2][c] == "--":  # avanço de duas casas do peão
+                if (
+                    l == 6 and self.tabuleiro[l - 2][c] == "--"
+                ):  # avanço de duas casas do peão
                     moves.append(Move((l, c), (l - 2, c), self.tabuleiro))
 
             if c - 1 >= 0:  # captura no lado esquerdo
                 if self.tabuleiro[l - 1][c - 1][1] == "p":
                     moves.append(Move((l, c), (l - 1, c - 1), self.tabuleiro))
                 elif (l - 1, c - 1) == self.enPassantssivel:
-                    moves.append(Move((l, c), (l - 1, c - 1), self.tabuleiro, enPassantMove=True))
+                    moves.append(
+                        Move((l, c), (l - 1, c - 1), self.tabuleiro, enPassantMove=True)
+                    )
             if c + 1 <= 7:  # captura no lado direito
                 if self.tabuleiro[l - 1][c + 1][1] == "p":
                     moves.append(Move((l, c), (l - 1, c + 1), self.tabuleiro))
                 elif (l - 1, c + 1) == self.enPassantssivel:
-                    moves.append(Move((l, c), (l - 1, c + 1), self.tabuleiro, enPassantMove=True))
+                    moves.append(
+                        Move((l, c), (l - 1, c + 1), self.tabuleiro, enPassantMove=True)
+                    )
 
         if not self.brancoMove:  # movimento das peças pretas
             if self.tabuleiro[l + 1][c] == "--":  # avanço de uma casa do peão
                 moves.append(Move((l, c), (l + 1, c), self.tabuleiro))
-                if l == 1 and self.tabuleiro[l + 2][c] == "--":  # avanço de duas casas do peão
+                if (
+                    l == 1 and self.tabuleiro[l + 2][c] == "--"
+                ):  # avanço de duas casas do peão
                     moves.append(Move((l, c), (l + 2, c), self.tabuleiro))
 
             if c - 1 >= 0:  # captura no lado esquerdo
                 if self.tabuleiro[l + 1][c - 1][1] == "b":
                     moves.append(Move((l, c), (l + 1, c - 1), self.tabuleiro))
                 elif (l + 1, c - 1) == self.enPassantssivel:
-                    moves.append(Move((l, c), (l + 1, c - 1), self.tabuleiro, enPassantMove=True))
+                    moves.append(
+                        Move((l, c), (l + 1, c - 1), self.tabuleiro, enPassantMove=True)
+                    )
             if c + 1 <= 7:  # captura no lado direito
                 if self.tabuleiro[l + 1][c + 1][1] == "b":
                     moves.append(Move((l, c), (l + 1, c + 1), self.tabuleiro))
                 elif (l + 1, c + 1) == self.enPassantssivel:
-                    moves.append(Move((l, c), (l + 1, c + 1), self.tabuleiro, enPassantMove=True))
+                    moves.append(
+                        Move((l, c), (l + 1, c + 1), self.tabuleiro, enPassantMove=True)
+                    )
 
     """
     Movimento das torres
@@ -306,9 +350,15 @@ class GameState:
                 if 0 <= linhaFim < 8 and 0 <= colunaFim < 8:  # Vê se esta no tabuleiro
                     pecaFim = self.tabuleiro[linhaFim][colunaFim]
                     if pecaFim == "--":  # Se vazio pode mover
-                        moves.append(Move((l, c), (linhaFim, colunaFim), (self.tabuleiro)))
-                    elif pecaFim[1] == corInimiga:  # Jeito mais rapido de verificar se a peça é do oponente ou não
-                        moves.append(Move((l, c), (linhaFim, colunaFim), (self.tabuleiro)))
+                        moves.append(
+                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
+                        )
+                    elif (
+                        pecaFim[1] == corInimiga
+                    ):  # Jeito mais rapido de verificar se a peça é do oponente ou não
+                        moves.append(
+                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
+                        )
                         break  # Depois de verificar ele para de dar movimento válido
                     else:
                         break  # Verifica peça aliada e para
@@ -358,9 +408,13 @@ class GameState:
                 if 0 <= linhaFim < 8 and 0 <= colunaFim < 8:
                     pecaFim = self.tabuleiro[linhaFim][colunaFim]
                     if pecaFim == "--":
-                        moves.append(Move((l, c), (linhaFim, colunaFim), (self.tabuleiro)))
+                        moves.append(
+                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
+                        )
                     elif pecaFim[1] == corInimiga:
-                        moves.append(Move((l, c), (linhaFim, colunaFim), (self.tabuleiro)))
+                        moves.append(
+                            Move((l, c), (linhaFim, colunaFim), (self.tabuleiro))
+                        )
                         break
                     else:
                         break
@@ -406,19 +460,31 @@ class GameState:
     def roque(self, l, c, moves):
         if self.quadradoSobAtaque(l, c):
             return  # não pode fazer roque se em check
-        if (self.brancoMove and self.atualDireitoCastelal.wks) or (not self.brancoMove and self.atualDireitoCastelal.bks):
+        if (self.brancoMove and self.atualDireitoCastelal.wks) or (
+            not self.brancoMove and self.atualDireitoCastelal.bks
+        ):
             self.roqueLadoRei(l, c, moves)
-        if (self.brancoMove and self.atualDireitoCastelal.wqs) or (not self.brancoMove and self.atualDireitoCastelal.bqs):
+        if (self.brancoMove and self.atualDireitoCastelal.wqs) or (
+            not self.brancoMove and self.atualDireitoCastelal.bqs
+        ):
             self.roqueLadoRainha(l, c, moves)
 
     def roqueLadoRei(self, l, c, moves):
         if self.tabuleiro[l][c + 1] == "--" and self.tabuleiro[l][c + 2] == "--":
-            if not self.quadradoSobAtaque(l, c + 1) and not self.quadradoSobAtaque(l, c + 2):
+            if not self.quadradoSobAtaque(l, c + 1) and not self.quadradoSobAtaque(
+                l, c + 2
+            ):
                 moves.append(Move((l, c), (l, c + 2), self.tabuleiro, roque=True))
 
     def roqueLadoRainha(self, l, c, moves):
-        if self.tabuleiro[l][c - 1] == "--" and self.tabuleiro[l][c - 2] == "--" and self.tabuleiro[l][c - 3] == "--":
-            if not self.quadradoSobAtaque(l, c - 1) and not self.quadradoSobAtaque(l, c - 2):
+        if (
+            self.tabuleiro[l][c - 1] == "--"
+            and self.tabuleiro[l][c - 2] == "--"
+            and self.tabuleiro[l][c - 3] == "--"
+        ):
+            if not self.quadradoSobAtaque(l, c - 1) and not self.quadradoSobAtaque(
+                l, c - 2
+            ):
                 moves.append(Move((l, c), (l, c - 2), self.tabuleiro, roque=True))
 
 
@@ -445,7 +511,9 @@ class Move:
         self.pecaMovida = tabuleiro[self.linInicial][self.colInicial]
         self.pecaCapturada = tabuleiro[self.linFinal][self.colFinal]
         # Promoção do peão
-        self.peaoPromovido = (self.pecaMovida == "Pb" and self.linFinal == 0) or (self.pecaMovida == "Pp" and self.linFinal == 7)
+        self.peaoPromovido = (self.pecaMovida == "Pb" and self.linFinal == 0) or (
+            self.pecaMovida == "Pp" and self.linFinal == 7
+        )
 
         # En PASSANT
         self.enPassantMove = enPassantMove
@@ -455,7 +523,12 @@ class Move:
         # Roque
         self.roque = roque
 
-        self.moveID = self.linInicial * 1000 + self.colInicial * 100 + self.linFinal * 10 + self.colFinal
+        self.moveID = (
+            self.linInicial * 1000
+            + self.colInicial * 100
+            + self.linFinal * 10
+            + self.colFinal
+        )
 
     def __eq__(self, other):
         if isinstance(other, Move):
@@ -463,7 +536,11 @@ class Move:
         return False
 
     def xadrezNotacao(self):
-        return self.getRankFiles(self.linInicial, self.colInicial).upper() + "-" + self.getRankFiles(self.linFinal, self.colFinal).upper()
+        return (
+            self.getRankFiles(self.linInicial, self.colInicial).upper()
+            + "-"
+            + self.getRankFiles(self.linFinal, self.colFinal).upper()
+        )
 
     def getRankFiles(self, l, c):
         return self.colstoFiles[c] + self.rowstoRank[l]
